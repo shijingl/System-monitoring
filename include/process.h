@@ -8,6 +8,7 @@ It contains relevant attributes as shown below
 */
 class Process {
  public:
+  Process(const int pid, const long total_jiffies);
   int Pid();                               // TODO: See src/process.cpp
   std::string User();                      // TODO: See src/process.cpp
   std::string Command();                   // TODO: See src/process.cpp
@@ -18,6 +19,8 @@ class Process {
 
   // TODO: Declare any necessary private members
  private:
+   int pid_;
+   float cpu_utilization_;
 };
 
 #endif

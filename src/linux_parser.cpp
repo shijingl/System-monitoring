@@ -104,17 +104,63 @@ long LinuxParser::UpTime() {
 }
 
 // TODO: Read and return the number of jiffies for the system
-long LinuxParser::Jiffies() { return 0; }
+long LinuxParser::Jiffies() { 
+  string line, cpu_string;
+  long value, total_jiffies{0};
+  std::ifstream filestream(kProcDirectory + kStatFilename);
+  if (filestream.is_open()) {
+    std::getline(filestream, line);
+    std::istringstream linestream(line);
+    linestream >> cpu_string;  // pop first string
+    while (linestream >> value) {
+      total_jiffies += value;
+    }
+  }
+  return total_jiffies;
+}
 
 // TODO: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
 
 // TODO: Read and return the number of active jiffies for the system
-long LinuxParser::ActiveJiffies() { return 0; }
+long LinuxParser::ActiveJiffies() { 
+  string line, cpu_string;
+  long value, active_jiffies{0};
+  vector<int> cpu_data{};
+  std::ifstream filestream(kProcDirectory + kStatFilename);
+  if (filestream.is_open()) {
+    std::getline(filestream, line);
+    std::istringstream linestream(line);
+    linestream >> cpu_string;  // pop first string
+    while (linestream >> value) {
+      cpu_data.push_back(value);
+    }
+  }
+  active_jiffies =
+      cpu_data.at(CPUStates::kUser_) + cpu_data.at(CPUStates::kNice_) +
+      cpu_data.at(CPUStates::kSystem_) + cpu_data.at(CPUStates::kIRQ_) +
+      cpu_data.at(CPUStates::kSoftIRQ_) + cpu_data.at(CPUStates::kSteal_);
+  return active_jiffies;
+}
 
 // TODO: Read and return the number of idle jiffies for the system
-long LinuxParser::IdleJiffies() { return 0; }
+long LinuxParser::IdleJiffies() { 
+  string line, cpu_string;
+  long value, idle_jiffies{0};
+  vector<int> cpu_data{};
+  std::ifstream filestream(kProcDirectory + kStatFilename);
+  if (filestream.is_open()) {
+    std::getline(filestream, line);
+    std::istringstream linestream(line);
+    linestream >> cpu_string;
+    while (linestream >> value) {
+      cpu_data.push_back(value);
+    }
+  }
+  idle_jiffies = cpu_data.at(CPUStates::kIdle_) + cpu_data.at(CPUStates::kIOwait_);
+  return idle_jiffies;
+}
 
 // TODO: Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() { return {}; }

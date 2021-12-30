@@ -1,12 +1,32 @@
 #ifndef PROCESSOR_H
 #define PROCESSOR_H
 
+#include<array>
+#include<vector>
+
+using std::vector;
+using std::array;
+
 class Processor {
  public:
-  float Utilization();  // TODO: See src/processor.cpp
+  Processor();
+  float Utilization();
+  long getTotalJiffies();
 
  // TODO: Declare any necessary private members
  private:
+   void CalculateDeltaTime(array<long, 3>&, array<long, 3>&);
+   // TODO: why do I need to use virtual here? 
+   virtual void GetLinuxParsesForJiffies(array<long, 3>&);
+   float CalculateUtilization();
+   void UpdatePrevJiffies();
+
+   // ActiveJiffies: [0]
+   // NonIdleJiffies: [1]
+   // TotalJiffies [2]
+   array<long, 3> current_cpu_jiffies_;
+   array<long, 3> prev_cpu_jiffies_;
+   array<float, 3> delta_jiffies_;
 };
 
 #endif
