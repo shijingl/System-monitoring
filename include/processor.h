@@ -16,8 +16,7 @@ class Processor {
  // TODO: Declare any necessary private members
  private:
    void CalculateDeltaTime(array<long, 3>&, array<long, 3>&);
-   // TODO: why do I need to use virtual here? 
-   virtual void GetLinuxParsesForJiffies(array<long, 3>&);
+   void GetLinuxParsesForJiffies(array<long, 3>&);
    float CalculateUtilization();
    void UpdatePrevJiffies();
 

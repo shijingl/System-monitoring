@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
-
+#include <numeric>
 #include "linux_parser.h"
 
 using std::stof;
@@ -103,51 +103,27 @@ long LinuxParser::UpTime() {
   return value;
 }
 
-// TODO: Read and return the number of jiffies for the system
-long LinuxParser::Jiffies() { 
-  string line, cpu_string;
-  long value, total_jiffies{0};
-  std::ifstream filestream(kProcDirectory + kStatFilename);
-  if (filestream.is_open()) {
-    std::getline(filestream, line);
-    std::istringstream linestream(line);
-    linestream >> cpu_string;  // pop first string
-    while (linestream >> value) {
-      total_jiffies += value;
-    }
-  }
-  return total_jiffies;
+long LinuxParser::Jiffies(const vector<int>& cpu_data) {
+  return std::accumulate(cpu_data.begin(), cpu_data.end(), 0);
 }
 
 // TODO: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
 
-// TODO: Read and return the number of active jiffies for the system
-long LinuxParser::ActiveJiffies() { 
-  string line, cpu_string;
-  long value, active_jiffies{0};
-  vector<int> cpu_data{};
-  std::ifstream filestream(kProcDirectory + kStatFilename);
-  if (filestream.is_open()) {
-    std::getline(filestream, line);
-    std::istringstream linestream(line);
-    linestream >> cpu_string;  // pop first string
-    while (linestream >> value) {
-      cpu_data.push_back(value);
-    }
-  }
-  active_jiffies =
-      cpu_data.at(CPUStates::kUser_) + cpu_data.at(CPUStates::kNice_) +
-      cpu_data.at(CPUStates::kSystem_) + cpu_data.at(CPUStates::kIRQ_) +
-      cpu_data.at(CPUStates::kSoftIRQ_) + cpu_data.at(CPUStates::kSteal_);
-  return active_jiffies;
+long LinuxParser::ActiveJiffies(const vector<int>& cpu_data) {
+  return (cpu_data.at(CPUStates::kUser_) + cpu_data.at(CPUStates::kNice_) +
+          cpu_data.at(CPUStates::kSystem_) + cpu_data.at(CPUStates::kIRQ_) +
+          cpu_data.at(CPUStates::kSoftIRQ_) + cpu_data.at(CPUStates::kSteal_));
 }
 
-// TODO: Read and return the number of idle jiffies for the system
-long LinuxParser::IdleJiffies() { 
+long LinuxParser::IdleJiffies(const vector<int>& cpu_data) { 
+  return cpu_data.at(CPUStates::kIdle_) + cpu_data.at(CPUStates::kIOwait_);
+}
+
+vector<int> LinuxParser::JiffiesData() {
   string line, cpu_string;
-  long value, idle_jiffies{0};
+  long value;
   vector<int> cpu_data{};
   std::ifstream filestream(kProcDirectory + kStatFilename);
   if (filestream.is_open()) {
@@ -158,8 +134,7 @@ long LinuxParser::IdleJiffies() {
       cpu_data.push_back(value);
     }
   }
-  idle_jiffies = cpu_data.at(CPUStates::kIdle_) + cpu_data.at(CPUStates::kIOwait_);
-  return idle_jiffies;
+  return cpu_data;
 }
 
 // TODO: Read and return CPU utilization

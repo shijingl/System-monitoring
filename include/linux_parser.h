@@ -4,6 +4,8 @@
 #include <fstream>
 #include <regex>
 #include <string>
+#include <vector>
+using std::vector;
 
 namespace LinuxParser {
 // Paths
@@ -56,10 +58,11 @@ enum MemoryType {
 };
 
 std::vector<std::string> CpuUtilization();
-long Jiffies();
-long ActiveJiffies();
+long Jiffies(const vector<int>&);
+long ActiveJiffies(const vector<int>&);
 long ActiveJiffies(int pid);
-long IdleJiffies();
+long IdleJiffies(const vector<int>&);
+vector<int> JiffiesData();
 
 // Processes
 std::string Command(int pid);
