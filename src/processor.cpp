@@ -39,8 +39,6 @@ float Processor::CalculateUtilization() {
   return utilization;
 }
 
-/*
 long Processor::getTotalJiffies() {
     return current_cpu_jiffies_[CPUTime::kTotalTime_];
 }
-*/
