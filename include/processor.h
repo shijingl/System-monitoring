@@ -18,7 +18,7 @@ class Processor {
    void CalculateDeltaTime(array<long, 3>&, array<long, 3>&);
    void GetLinuxParsesForJiffies(array<long, 3>&);
    float CalculateUtilization();
-   void UpdatePrevJiffies();
+   // void UpdatePrevJiffies();
 
    // ActiveJiffies: [0]
    // NonIdleJiffies: [1]

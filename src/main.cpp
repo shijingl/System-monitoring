@@ -3,5 +3,6 @@
 
 int main() {
   System system;
-  NCursesDisplay::Display(system);
+  int n = 30;
+  NCursesDisplay::Display(system, n);
 }

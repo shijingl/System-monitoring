@@ -22,9 +22,9 @@ vector<Process>& System::Processes() {
     const vector<int> processes_pids = LinuxParser::Pids();
     processes_.clear();
     for (size_t i = 0; i < processes_pids.size(); ++i) {
-        processes_.emplace_back(processes_pids.at(i), cpu_.getTotalJiffies());
+        processes_.emplace_back(Process(processes_pids.at(i), cpu_.getTotalJiffies()));
     }
-    // std::sort(processes_.begin(), processes_.end());
+    std::sort(processes_.begin(), processes_.end());
     return processes_;
 }
 
