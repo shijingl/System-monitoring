@@ -200,8 +200,7 @@ string LinuxParser::Command(int pid) {
   return line;
 }
 
-// TODO: Read and return the memory used by a process
-// REMOVE: [[maybe_unused]] once you define the function
+// Read and return the memory used by a process
 float LinuxParser::Ram(int pid) {
   const float kb_to_mb = 1000;
   string key, line;
@@ -257,6 +256,20 @@ string LinuxParser::User(int pid) {
   return value;
 }
 
-// TODO: Read and return the uptime of a process
-// REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::UpTime(int pid[[maybe_unused]]) { return 0; }
+// Read and return the uptime of a process
+long LinuxParser::UpTime(int pid) {
+  string key, line;
+  long int value{0};
+  std::ifstream filestream(kProcDirectory + to_string(pid) + kStatFilename);
+  if (filestream.is_open()) {
+    std::getline(filestream, line);
+    std::istringstream linestream(line);
+    for (int i = 0; i < 21; ++i) {
+      linestream >> key;
+    }
+    linestream >> value;
+    value = value / sysconf(_SC_CLK_TCK);
+    return value;
+  }
+  return value;
+}
