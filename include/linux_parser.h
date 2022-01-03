@@ -49,6 +49,7 @@ enum CPUTime {
   kTotalTime_
 };
 
+// TODO: can be removed 
 enum MemoryType {
   kMemTotal_ = 0,
   kMemFree_,

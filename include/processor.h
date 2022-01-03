@@ -13,12 +13,10 @@ class Processor {
   float Utilization();
   long getTotalJiffies();
 
- // TODO: Declare any necessary private members
  private:
    void CalculateDeltaTime(array<long, 3>&, array<long, 3>&);
    void GetLinuxParsesForJiffies(array<long, 3>&);
    float CalculateUtilization();
-   // void UpdatePrevJiffies();
 
    // ActiveJiffies: [0]
    // NonIdleJiffies: [1]

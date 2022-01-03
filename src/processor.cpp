@@ -7,7 +7,6 @@ using std::array;
 
 Processor::Processor() { GetLinuxParsesForJiffies(prev_cpu_jiffies_); }
 
-// TODO: Return the aggregate CPU utilization
 float Processor::Utilization() { 
     GetLinuxParsesForJiffies(current_cpu_jiffies_);
     CalculateDeltaTime(current_cpu_jiffies_, prev_cpu_jiffies_);

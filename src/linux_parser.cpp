@@ -151,6 +151,7 @@ vector<int> LinuxParser::JiffiesData() {
   return cpu_data;
 }
 
+// TODO: do we need this function?
 vector<string> LinuxParser::CpuUtilization() { return {}; }
 
 int LinuxParser::TotalProcesses() { 
