@@ -59,7 +59,7 @@ vector<int> LinuxParser::Pids() {
       string filename(file->d_name);
       if (std::all_of(filename.begin(), filename.end(), isdigit)) {
         int pid = stoi(filename);
-        pids.push_back(pid);
+        pids.emplace_back(pid);
       }
     }
   }
@@ -77,7 +77,7 @@ float LinuxParser::MemoryUtilization() {
       std::getline(stream, line);
       std::istringstream linestream(line);
       linestream >> key >> value >> unit;
-      memory_data.push_back(value);
+      memory_data.emplace_back(value);
     }
   }
   float utilization = (memory_data.at(MemoryType::kMemTotal_) -
@@ -89,7 +89,6 @@ float LinuxParser::MemoryUtilization() {
   return utilization;
 }
 
-// TODO: Read and return the system uptime
 long LinuxParser::UpTime() { 
   string line;
   long value{0};
@@ -146,13 +145,12 @@ vector<int> LinuxParser::JiffiesData() {
     std::istringstream linestream(line);
     linestream >> cpu_string;
     while (linestream >> value) {
-      cpu_data.push_back(value);
+      cpu_data.emplace_back(value);
     }
   }
   return cpu_data;
 }
 
-// TODO: Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() { return {}; }
 
 int LinuxParser::TotalProcesses() { 
