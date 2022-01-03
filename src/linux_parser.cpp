@@ -200,7 +200,7 @@ string LinuxParser::Command(int pid) {
 
 // Read and return the memory used by a process
 float LinuxParser::Ram(int pid) {
-  const float kb_to_mb = 1000;
+  const float kb_to_mb = 1024;
   string key, line;
   float value{0.0};
   std::ifstream filestream(kProcDirectory + to_string(pid) + kStatusFilename);
@@ -208,7 +208,9 @@ float LinuxParser::Ram(int pid) {
     while (std::getline(filestream, line)) {
       std::istringstream linestream(line);
       while (linestream >> key >> value) {
-        if (key == "VmSize:") {
+        // use VmRSS because VmRSS is the exact physical memory size 
+        // VmSize is the sum of all the virtual memory, which is more than Physical RAM size. 
+        if (key == "VmRSS:") {
           return value / kb_to_mb;
         }
       }
