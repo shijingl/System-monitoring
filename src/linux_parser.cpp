@@ -10,6 +10,26 @@ using std::string;
 using std::to_string;
 using std::vector;
 
+template <typename T>
+T findValueByKey(std::string const &keyFilter, std::string const &filename) {
+  std::string line, key;
+  T value;
+
+  std::ifstream stream(LinuxParser::kProcDirectory + filename);
+  if(stream.is_open()) {
+    while(std::getline(stream, line)) {
+      std::istringstream linestream(line);
+      while (linestream >> key >> value) {
+        if (key == keyFilter) {
+          return value;
+        }
+      }
+    }
+  }
+  return value;
+};
+
+
 // DONE: An example of how to read data from the filesystem 
 string LinuxParser::OperatingSystem() {
   string line;
@@ -67,6 +87,18 @@ vector<int> LinuxParser::Pids() {
   return pids;
 }
 
+float LinuxParser::MemoryUtilization() {
+  string memTotal = "MemTotal:";
+  string memFree = "MemFree:";
+  string memBuffer = "Buffers:";
+  string memCached = "Cached:";
+  float total = findValueByKey<float>(memTotal, kMeminfoFilename);
+  float free = findValueByKey<float>(memFree, kMeminfoFilename);
+  float buffer = findValueByKey<float>(memBuffer, kMeminfoFilename);
+  float cached = findValueByKey<float>(memCached, kMeminfoFilename);
+  return (total - free - buffer - cached) / total;
+}
+/*
 float LinuxParser::MemoryUtilization() { 
   string key, unit, line;
   float value;
@@ -88,6 +120,8 @@ float LinuxParser::MemoryUtilization() {
 
   return utilization;
 }
+*/
+
 
 long LinuxParser::UpTime() { 
   string line;
@@ -152,9 +186,12 @@ vector<int> LinuxParser::JiffiesData() {
 }
 
 // TODO: do we need this function?
-vector<string> LinuxParser::CpuUtilization() { return {}; }
+// vector<string> LinuxParser::CpuUtilization() { return {}; } 
 
-int LinuxParser::TotalProcesses() { 
+int LinuxParser::TotalProcesses() {
+  string filterProcesses = "processes";
+  return findValueByKey<float>(filterProcesses, kStatFilename);
+  /*
   string key, line;
   float value{0.0};
   std::ifstream filestream(kProcDirectory + kStatFilename);
@@ -169,9 +206,13 @@ int LinuxParser::TotalProcesses() {
     }
   }
   return value;
+  */
 }
 
-int LinuxParser::RunningProcesses() { 
+int LinuxParser::RunningProcesses() {
+  string filterRunningProcesses = "procs_running";
+  return findValueByKey<float>(filterRunningProcesses, kStatFilename);
+  /* 
   string key, line;
   float value{0.0};
   std::ifstream filestream(kProcDirectory + kStatFilename);
@@ -186,6 +227,7 @@ int LinuxParser::RunningProcesses() {
     }
   }
   return value;
+  */
 }
 
 // Read and return the command associated with a process

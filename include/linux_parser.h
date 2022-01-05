@@ -50,6 +50,7 @@ enum CPUTime {
 };
 
 // TODO: can be removed 
+/*
 enum MemoryType {
   kMemTotal_ = 0,
   kMemFree_,
@@ -57,6 +58,7 @@ enum MemoryType {
   kMemBuffer_,
   kMemCached_
 };
+*/
 
 std::vector<std::string> CpuUtilization();
 long Jiffies(const vector<int>&);
