@@ -8,6 +8,16 @@
 using std::vector;
 
 namespace LinuxParser {
+// Filters
+const std::string filterProcesses("processes");
+const std::string filterRunningProcesses("procs_running");
+const std::string filterMemTotalString("MemTotal:");
+const std::string filterMemFreeString("MemFree:");
+const std::string filterMemBufferString("Buffers:");
+const std::string filterMemCachedString("Cached:");
+const std::string filterUID("Uid:");
+const std::string filterProcMem("VmRSS:");
+
 // Paths
 const std::string kProcDirectory{"/proc/"};
 const std::string kCmdlineFilename{"/cmdline"};
@@ -48,17 +58,6 @@ enum CPUTime {
   kActiveTime_,
   kTotalTime_
 };
-
-// TODO: can be removed 
-/*
-enum MemoryType {
-  kMemTotal_ = 0,
-  kMemFree_,
-  kMemAvailable_,
-  kMemBuffer_,
-  kMemCached_
-};
-*/
 
 std::vector<std::string> CpuUtilization();
 long Jiffies(const vector<int>&);

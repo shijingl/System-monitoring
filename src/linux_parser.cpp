@@ -88,40 +88,12 @@ vector<int> LinuxParser::Pids() {
 }
 
 float LinuxParser::MemoryUtilization() {
-  string memTotal = "MemTotal:";
-  string memFree = "MemFree:";
-  string memBuffer = "Buffers:";
-  string memCached = "Cached:";
-  float total = findValueByKey<float>(memTotal, kMeminfoFilename);
-  float free = findValueByKey<float>(memFree, kMeminfoFilename);
-  float buffer = findValueByKey<float>(memBuffer, kMeminfoFilename);
-  float cached = findValueByKey<float>(memCached, kMeminfoFilename);
+  float total = findValueByKey<float>(filterMemTotalString, kMeminfoFilename);
+  float free = findValueByKey<float>(filterMemFreeString, kMeminfoFilename);
+  float buffer = findValueByKey<float>(filterMemBufferString, kMeminfoFilename);
+  float cached = findValueByKey<float>(filterMemCachedString, kMeminfoFilename);
   return (total - free - buffer - cached) / total;
 }
-/*
-float LinuxParser::MemoryUtilization() { 
-  string key, unit, line;
-  float value;
-  vector<float> memory_data{};
-  std::ifstream stream(kProcDirectory + kMeminfoFilename);
-  if (stream.is_open()) {
-    for (int i = 0; i < 5; ++i) {
-      std::getline(stream, line);
-      std::istringstream linestream(line);
-      linestream >> key >> value >> unit;
-      memory_data.emplace_back(value);
-    }
-  }
-  float utilization = (memory_data.at(MemoryType::kMemTotal_) -
-                       memory_data.at(MemoryType::kMemFree_) -
-                       memory_data.at(MemoryType::kMemBuffer_) -
-                       memory_data.at(MemoryType::kMemCached_)) /
-                       memory_data.at(MemoryType::kMemTotal_);
-
-  return utilization;
-}
-*/
-
 
 long LinuxParser::UpTime() { 
   string line;
@@ -177,6 +149,7 @@ vector<int> LinuxParser::JiffiesData() {
   if (filestream.is_open()) {
     std::getline(filestream, line);
     std::istringstream linestream(line);
+    // pop the first value
     linestream >> cpu_string;
     while (linestream >> value) {
       cpu_data.emplace_back(value);
@@ -185,49 +158,12 @@ vector<int> LinuxParser::JiffiesData() {
   return cpu_data;
 }
 
-// TODO: do we need this function?
-// vector<string> LinuxParser::CpuUtilization() { return {}; } 
-
 int LinuxParser::TotalProcesses() {
-  string filterProcesses = "processes";
   return findValueByKey<float>(filterProcesses, kStatFilename);
-  /*
-  string key, line;
-  float value{0.0};
-  std::ifstream filestream(kProcDirectory + kStatFilename);
-  if (filestream.is_open()) {
-    while (std::getline(filestream, line)) {
-      std::istringstream linestream(line);
-      while (linestream >> key >> value) {
-        if (key == "processes") {
-          return value;
-        }
-      }
-    }
-  }
-  return value;
-  */
 }
 
 int LinuxParser::RunningProcesses() {
-  string filterRunningProcesses = "procs_running";
   return findValueByKey<float>(filterRunningProcesses, kStatFilename);
-  /* 
-  string key, line;
-  float value{0.0};
-  std::ifstream filestream(kProcDirectory + kStatFilename);
-  if (filestream.is_open()) {
-    while (std::getline(filestream, line)) {
-      std::istringstream linestream(line);
-      while (linestream >> key >> value) {
-        if (key == "procs_running") {
-          return value;
-        }
-      }
-    }
-  }
-  return value;
-  */
 }
 
 // Read and return the command associated with a process
@@ -264,19 +200,7 @@ float LinuxParser::Ram(int pid) {
 
 // Read and return the user ID associated with a process
 string LinuxParser::Uid(int pid) {
-  string key, line, value{};
-  std::ifstream filestream(kProcDirectory + to_string(pid) + kStatusFilename);
-  if (filestream.is_open()) {
-    while (std::getline(filestream, line)) {
-      std::istringstream linestream(line);
-      while (linestream >> key >> value) {
-        if (key == "Uid:") {
-          return value;
-        }
-      }
-    }
-  }
-  return value;
+  return findValueByKey<std::string>(filterUID, std::to_string(pid) + kStatusFilename);
 }
 
 // Read and return the user associated with a process
