@@ -29,6 +29,19 @@ T findValueByKey(std::string const &keyFilter, std::string const &filename) {
   return value;
 };
 
+template <typename T>
+T getValueOfFile(std::string const &filename) {
+  std::string line;
+  T value;
+
+  std::ifstream stream(LinuxParser::kProcDirectory + filename);
+  if (stream.is_open()) {
+    std::getline(stream, line);
+    std::istringstream linestream(line);
+    linestream >> value;
+  }
+  return value;
+};
 
 // DONE: An example of how to read data from the filesystem 
 string LinuxParser::OperatingSystem() {
@@ -96,16 +109,7 @@ float LinuxParser::MemoryUtilization() {
 }
 
 long LinuxParser::UpTime() { 
-  string line;
-  long value{0};
-  std::ifstream filestream(kProcDirectory + kUptimeFilename);
-  if (filestream.is_open()) {
-    std::getline(filestream, line);
-    std::istringstream linestream(line);
-    linestream >> value;
-    return value;
-  }
-  return value;
+  return getValueOfFile<long>(kUptimeFilename);
 }
 
 long LinuxParser::Jiffies(const vector<int>& cpu_data) {
@@ -180,22 +184,10 @@ string LinuxParser::Command(int pid) {
 // Read and return the memory used by a process
 float LinuxParser::Ram(int pid) {
   const float kb_to_mb = 1024;
-  string key, line;
-  float value{0.0};
-  std::ifstream filestream(kProcDirectory + to_string(pid) + kStatusFilename);
-  if (filestream.is_open()) {
-    while (std::getline(filestream, line)) {
-      std::istringstream linestream(line);
-      while (linestream >> key >> value) {
-        // use VmRSS because VmRSS is the exact physical memory size 
-        // VmSize is the sum of all the virtual memory, which is more than Physical RAM size. 
-        if (key == "VmRSS:") {
-          return value / kb_to_mb;
-        }
-      }
-    }
-  }
-  return value;
+  // use VmRSS because VmRSS is the exact physical memory size 
+  // VmSize is the sum of all the virtual memory, which is more than Physical RAM size.
+  float vmRSS = findValueByKey<float>(filterProcMem, std::to_string(pid) + kStatusFilename);
+  return vmRSS / kb_to_mb;
 }
 
 // Read and return the user ID associated with a process
