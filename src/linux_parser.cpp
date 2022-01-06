@@ -176,6 +176,9 @@ string LinuxParser::Command(int pid) {
   std::ifstream filestream(kProcDirectory + to_string(pid) + kCmdlineFilename);
   if (filestream.is_open()) {
     std::getline(filestream, line);
+    if (line.length() > 40) {
+      return line.substr(0, 40).append("...");
+    }
     return line;
   }
   return line;
